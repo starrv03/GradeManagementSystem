@@ -2,7 +2,8 @@ function init(){
 
     //DEV URL
     //const BASE_URL=`http://localhost:3000`;
-    const BASE_URL=`https://0.0.0.0:3000`;
+    //PRODUCTION URL
+    const BASE_URL=`.`;
     let projectName="";
     let records=[];
     let metadata={} 
