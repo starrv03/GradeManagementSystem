@@ -26,22 +26,6 @@ function init(){
         }
     }
 
-
-    function renderContentFromOjectStorage(){
-        const mainHeading=document.getElementById("title");
-        mainHeading.textContent=window.localStorage.projectName;
-        const records=JSON.parse(window.localStorage.records);
-        records.forEach(record => displayRecord(record));
-    }
-
-    function populateObjectStorage(){
-        const data={projectName,records,metadata};
-        for(const key in data){
-            if(typeof data[key]==="object") window.localStorage.setItem(key, JSON.stringify(data[key],null,2));
-            else window.localStorage.setItem(key, data[key]);
-        }
-    }
-
     function renderContent(){
         const mainHeading=document.getElementById("title");
         mainHeading.textContent=projectName;
