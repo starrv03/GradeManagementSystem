@@ -7,7 +7,9 @@ let gradeSystemData={
         records: [],
         metadata: {
             totalRecords: 0,
-            lastUpdated: new Date().toISOString()
+            get lastUpdated(){
+                return new Date().toISOString();
+            }
         }
     };
 
@@ -40,6 +42,7 @@ export function removeRecord(id) {
     const idx=gradeSystemData.records.indexOf(record);
     const deleted=gradeSystemData.records.splice(idx,1);
     gradeSystemData.metadata.totalRecords--;
+    gradeSystemData.metadata.lastUpdated;
     saveData();
     return {status:true,msg:deleted};
 }
@@ -186,27 +189,27 @@ function validateRecord(record) {
         else{
             if(key==="id"){
                 status=typeof record[key]==="number";
-                if(!status) return {status,msg:status? "" : `${key} must be a number`};
+                if(!status) return {status,msg:`${key} must be a number`};
             }
             else if(key==="name"){
                 status=typeof record[key]==="string" && isValidName(record[key]);
-                if(!status) return {status,msg:status? "" : `${key} must be a string and have at least 3 letters`};
+                if(!status) return {status,msg:`${key} must be a string of letters and spaces and have at least 3 characters`};
             }
             else if(key==="course"){
                 status=typeof record[key]==="string" && isValidCourse(record[key]);
-                if(!status) return {status,msg:status? "" : `${key} must be a string and have at least 3 letters`};
+                if(!status) return {status,msg:`${key} must be a string of letters and spaces and have at least 3 characters`};
             }      
             else if(key==="grades"){
                 status=Array.isArray(record[key]) && isNumberArr(record[key]) && isInRangeArr(record[key],0,100);
-                if(!status) return {status,msg:status? "" : `${key} must be a list of number grades in the range 0 to 100 inclusive`};
+                if(!status) return {status,msg:`${key} must be a list of number grades in the range 0 to 100 inclusive`};
             }   
             else if(key==="attendance"){
                 status=typeof record[key]==="number" && isInRange(record[key],0,100);
-                if(!status) return {status,msg:status? "" : `${key} must be a number in the range 0 to 100 inclusive`};
+                if(!status) return {status,msg:`${key} must be a number in the range 0 to 100 inclusive`};
             }  
             else{
                 status=typeof record[key]==="string" && (record[key]==="active" || record[key]==="inactive");
-                if(!status) return {status,msg:status? "" : `${key} must be a string and have a value of active or inactive`};
+                if(!status) return {status,msg:`${key} must be a string and have a value of active or inactive`};
             }           
         }
     }
@@ -238,7 +241,9 @@ function seed(){
         records: [],
         metadata: {
             totalRecords: 0,
-            lastUpdated: new Date().toISOString()
+            get lastUpdated(){
+                return new Date().toISOString();
+            }
         }
     };
     saveData();
@@ -270,6 +275,8 @@ function seed(){
         attendance: 100,
         status: "active"
     };
+    addRecord(newRecord);
+    newRecord={name:"Sam Price",course:"math",grades:[99,100],attendance:100,status:"active"};
     addRecord(newRecord);
 }
 
@@ -348,9 +355,9 @@ function initialTest(){
 // 5. Main Program
 
 function main() {
-   
+   seed();
 }
 
 
 // Start the program
-//main();
+main();
