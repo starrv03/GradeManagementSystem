@@ -1,21 +1,4 @@
 import fs from 'node:fs';
-// Week 1 Session 5: JavaScript Data Manipulation Project
-// Student Name: [Your Name]
-// Project Theme: [Choose one: Grade System, Library Catalog, Fitness Tracker, Recipe Manager, Budget Tracker]
-
-// 1. Data Structure
-// TODO: Modify this structure based on your chosen theme
-
-/*class Record{
-    constructor(id,name,course,grades,attendance,status){
-        this.id=id;
-        this.name=name;
-        this.course=course,
-        this.grades=grades;
-        this.attendance=attendance;
-        this.status=status;
-    }
-}*/
 
 const JSON_URL="./structure/json/data.json";
 
@@ -28,17 +11,14 @@ let gradeSystemData={
         }
     };
 
-// 2. Core Functions
 
 // Add a new record
 export function addRecord(record) {
+    if(!typeof record==="object") return {status:false, msg: "record must be an object"};
+    if(!(record.name && record.course && record.grades && typeof record.attendance==="number" && record.status)) return {status:false, msg: "record must have name, course, grades, attendance, and status"};
     fetchData();
-    // TODO: Generate unique ID
     record.id=gradeSystemData.metadata.totalRecords+1;
-    // TODO: Validate the record
-    // TODO: Update metadata
     const result=validateRecord(record);
-    // TODO: Add to projectData.records
      if(result.status){
         gradeSystemData.records.push(record);
         gradeSystemData.metadata.totalRecords++;
@@ -46,22 +26,19 @@ export function addRecord(record) {
         saveData();
         return {status:true, msg: record};
      } 
-     return {status: false, msg: "invalid new record"};
+     return {status: false, msg:result.msg};
 }
 
 // Remove a record by ID
 export function removeRecord(id) {
     fetchData();
-    // TODO: Find record by ID
     const records=gradeSystemData.records.filter(record=>record.id===parseInt(id));
     if(records.length<=0){
         return {status:false,msg: "record does not exist"};
     }
     const record=records[0];
-    // TODO: Remove from array
     const idx=gradeSystemData.records.indexOf(record);
     const deleted=gradeSystemData.records.splice(idx,1);
-    // TODO: Update metadata
     gradeSystemData.metadata.totalRecords--;
     saveData();
     return {status:true,msg:deleted};
@@ -69,22 +46,17 @@ export function removeRecord(id) {
 
 // Update an existing record
 export function updateRecord(id, updates) {
-    fetchData();
-    console.log(typeof updates);
     if(typeof updates!=="object"){
         return {status:false,msg: "updates must be an object"};
     }
-    // TODO: Find record by ID
+    fetchData();
     let records=gradeSystemData.records.filter(record=>record.id===parseInt(id));
     if(records.length<=0){
         return {status:false,msg: "record does not exist"};
     }
     const record=records[0];
-    //validate record
     const result=validateRecord(updates);
-    // TODO: Update metadata
     if(result.status){
-        // TODO: Apply updates
         for(const key in updates){
             record[key]=updates[key];
         }
@@ -92,13 +64,11 @@ export function updateRecord(id, updates) {
         saveData();
         return {status: true, msg: record};
     }
-    return {status:false,msg: result};;
+    return {status:false,msg: result.msg};;
 }
 
 // Search records based on criteria
 export function searchRecords(id) {
-    // TODO: Filter records based on criteria
-    // TODO: Return matching records
     fetchData();
     const filteredRecords=gradeSystemData.records.filter(record=>record.id===parseInt(id));
     if(filteredRecords.length<=0){
@@ -123,11 +93,6 @@ export function getMetadata(){
     return gradeSystemData.metadata;
 }
 
-function fetchData(){
-    gradeSystemData=JSON.parse(fs.readFileSync(JSON_URL,'utf-8')); 
-    gradeSystemData=gradeSystemData.gradeSystemData;
-}
-
 // Calculate statistics or summary
 function generateSummary() {
     // TODO: Calculate relevant statistics
@@ -143,19 +108,15 @@ function generateSummary() {
     return summary;
 }
 
-// 3. Data Processing Functions
 
 // Parse JSON string to object
 function loadData(jsonString) {
-    // TODO: Try to parse JSON
-    // TODO: Handle errors
      let data;
      try{
         data=JSON.parse(jsonString);
      }catch(e){
         console.log(e.message);
      }
-    // TODO: Validate data structure
    const result=validateRecord(data);
    if(!result.status){
         console.log(result.msg);
@@ -164,10 +125,13 @@ function loadData(jsonString) {
    return data;
 }
 
+function fetchData(){
+    gradeSystemData=JSON.parse(fs.readFileSync(JSON_URL,'utf-8')); 
+    gradeSystemData=gradeSystemData.gradeSystemData;
+}
+
 // Convert object to JSON string
 function saveData() {
-    // TODO: Convert projectData to JSON
-    // TODO: Return formatted string
     console.log("saving data....");
     const json=JSON.stringify({gradeSystemData},null,2);
     try{
@@ -182,15 +146,16 @@ function saveData() {
 
 // Validate a record before adding/updating
 function validateRecord(record) {
-
     function isInRange(value,min,max){
+        if(typeof value!=="number" || typeof min!=="number" || typeof max!=="number") return false;
         return value>=min && value<=max;
     }
 
     function isInRangeArr(arr,min,max){
-        arr.forEach(value=>{
-            if(!isInRange(value,min,max)) return false;
-        });
+        if(!Array.isArray(arr) || typeof min!=="number" || typeof max!=="number") return false;
+        for(let i=0; i<arr.length; i++){
+            if(!isInRange(arr[i],min,max)) return false;
+        };
         return true;
     }
 
@@ -201,9 +166,16 @@ function validateRecord(record) {
         return true;
     }
 
-    // TODO: Check required fields
-    // TODO: Validate data types
-    // TODO: Return true/false with error message
+    function isValidName(name){
+        const regex=/^[A-Za-z]{3,}(\s[A-Za-z]{1,})*$/;
+        return regex.test(name);
+    }
+
+    function isValidCourse(name){
+        const regex=/^[A-Za-z]{3,}(\s[A-Za-z]{1,})*$/;
+        return regex.test(name);
+    }
+
     if(typeof record!="object") return {status:false, msg: "Record must be an object"};
     const validKeys=new Set(["id","name","course","grades","attendance","status"]);
     let status=false;
@@ -214,61 +186,50 @@ function validateRecord(record) {
         else{
             if(key==="id"){
                 status=typeof record[key]==="number";
-                return {status,msg:status? "" : `${key} must be a number`};
+                if(!status) return {status,msg:status? "" : `${key} must be a number`};
             }
             else if(key==="name"){
-                status=typeof record[key]==="string";
-                return {status,msg:status? "" : `${key} must be a string`};
+                status=typeof record[key]==="string" && isValidName(record[key]);
+                if(!status) return {status,msg:status? "" : `${key} must be a string and have at least 3 letters`};
             }
             else if(key==="course"){
-                status=typeof record[key]==="string";
-                return {status,msg:status? "" : `${key} must be a string`};
+                status=typeof record[key]==="string" && isValidCourse(record[key]);
+                if(!status) return {status,msg:status? "" : `${key} must be a string and have at least 3 letters`};
             }      
             else if(key==="grades"){
                 status=Array.isArray(record[key]) && isNumberArr(record[key]) && isInRangeArr(record[key],0,100);
-                return {status,msg:status? "" : `${key} must be a list of number grades in the range 0 to 100 inclusive`};
+                if(!status) return {status,msg:status? "" : `${key} must be a list of number grades in the range 0 to 100 inclusive`};
             }   
             else if(key==="attendance"){
                 status=typeof record[key]==="number" && isInRange(record[key],0,100);
-                return {status,msg:status? "" : `${key} must be a number in the range 0 to 100 inclusive`};
+                if(!status) return {status,msg:status? "" : `${key} must be a number in the range 0 to 100 inclusive`};
             }  
             else{
-                status=typeof record[key]==="string";
-                return {status,msg:status? "" : `${key} must be a string`};
+                status=typeof record[key]==="string" && (record[key]==="active" || record[key]==="inactive");
+                if(!status) return {status,msg:status? "" : `${key} must be a string and have a value of active or inactive`};
             }           
         }
     }
+    return {status:true,msg:""};
 }
 
 // 4. Display Functions
 
 // Display all records
 function displayRecords() {
-    // TODO: Format and display records
-    // TODO: Use console.log with clear formatting
     const json=JSON.stringify(gradeSystemData,null,2);
     console.log("records: ",json);
 }
 
 // Display search results
 function displaySearchResults(results) {
-    // TODO: Format and display search results
-    // TODO: Handle case where no results found
     console.log("search results: ",results);
 }
 
 // Display summary statistics
 function displaySummary(summary) {
-    // TODO: Format and display summary data
-    // TODO: Make numbers readable (e.g., averages, totals)
     console.log("summary",summary);
 
-}
-
-// 5. Main Program
-
-function main() {
-    seed();
 }
 
 function seed(){
@@ -383,6 +344,13 @@ function initialTest(){
 
 // Uncomment to run tests
 // runTests();
+
+// 5. Main Program
+
+function main() {
+   
+}
+
 
 // Start the program
 //main();

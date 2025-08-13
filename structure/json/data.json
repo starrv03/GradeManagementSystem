@@ -3,43 +3,23 @@
     "projectName": "Student Grade Tracker",
     "records": [
       {
-        "name": "Alice",
-        "course": "Math",
+        "name": "sam",
+        "course": "math",
         "grades": [
           99,
+          99,
+          99,
+          99,
+          100,
           100
         ],
         "attendance": 100,
         "status": "active",
         "id": 1
-      },
-      {
-        "name": "Alice",
-        "course": "Math",
-        "grades": [
-          99,
-          100
-        ],
-        "attendance": 100,
-        "status": "active",
-        "id": 2
-      },
-      {
-        "name": "Alice",
-        "course": "Johnson",
-        "grades": [
-          88,
-          90,
-          99,
-          100
-        ],
-        "attendance": 100,
-        "status": "active",
-        "id": 3
       }
     ],
     "metadata": {
-      "totalRecords": 3,
+      "totalRecords": 1,
       "lastUpdated": "2025-08-10T18:52:27.287Z"
     }
   }

@@ -33,7 +33,6 @@ function init(){
     }
 
     function displayRecord(record){
-        console.log(record);
         const section=document.getElementsByTagName("main")[0].firstElementChild;
         const div=document.createElement("div");
         div.classList.add("col");
@@ -127,7 +126,7 @@ function init(){
         const regex=/^\d+(,{1}\d+)*/;
         const match=regex.test(grades);
         if(!match) {
-            alert("Grade must be comma seperated integers");
+            alert("Grades must be comma seperated integers");
             return;
         }
         let gradesList=form.grades.value.split(",");
@@ -141,7 +140,7 @@ function init(){
         body:JSON.stringify(data)
        });
        const result=await resp.json();
-       if(result.status){
+       if(resp.ok){
         displayRecord(result);
        }
        else{
@@ -169,7 +168,6 @@ function init(){
         let grades=e.target["new-grade"].value.split(",");
         grades=grades.map(grade=>parseFloat(grade));
         const data={grades};
-        console.log(data);
         const parent=e.target.parentElement.parentElement;
         const id=parent.id.split("-")[1];
         const resp=await fetch(`${BASE_URL}/records/${id}`,{
@@ -179,20 +177,18 @@ function init(){
             },
             body:JSON.stringify(data)
         });
-        if(resp.status){
-            const result=await resp.json();
-            if(result.status){
-                const updatedGrades=result.grades;
-                const gradesList=parent.getElementsByTagName('ul')[0];
-                while(gradesList.firstChild){
-                    gradesList.firstChild.remove();
-                }
-                updatedGrades.forEach(grade=>{
-                    const li=document.createElement("li");
-                    li.textContent=`${grade}%`;
-                    gradesList.append(li);
-                });
+        const result=await resp.json();
+        if(resp.ok){
+            const updatedGrades=result.grades;
+            const gradesList=parent.getElementsByTagName('ul')[0];
+            while(gradesList.firstChild){
+                gradesList.firstChild.remove();
             }
+            updatedGrades.forEach(grade=>{
+                const li=document.createElement("li");
+                li.textContent=`${grade}%`;
+                gradesList.append(li);
+            });
         }
         else{
             alert(result);

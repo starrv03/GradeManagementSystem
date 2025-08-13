@@ -28,7 +28,6 @@ app.get('/records/:id', (req, res) => {
 });
 
 app.post('/records', jsonParser, (req, res) => {
-  console.log(req.body);
   const result=addRecord(req.body);
   if(result.status){
     res.statusCode=201;
@@ -40,7 +39,6 @@ app.post('/records', jsonParser, (req, res) => {
 });
 
 app.patch('/records/:id', jsonParser, (req, res) => {
-  console.log(req.body);
   const result=updateRecord(req.params.id,req.body);
   if(result.status){
     res.statusCode=200;
@@ -52,16 +50,17 @@ app.patch('/records/:id', jsonParser, (req, res) => {
 });
 
 app.delete("/records/:id",(req, res)=>{
-  const result=res.json(removeRecord(req.params.id));
+  const result=removeRecord(req.params.id);
   if(result.status) {
     res.statusCode=204;
-    res.send('');
+    res.send('{}');
   }
   else{
     res.statusCode=404;
     res.json(result.msg);
   }
 });
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
